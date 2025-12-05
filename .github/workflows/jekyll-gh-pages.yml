@@ -32,7 +32,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1' # Jekyll 권장 버전
+          ruby-version: '3.4.2' # Jekyll 권장 버전
           bundler-cache: true # Gemfile.lock 기반 자동 캐싱
 
       - name: Setup Pages
