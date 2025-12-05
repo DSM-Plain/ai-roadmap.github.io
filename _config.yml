@@ -1,8 +1,8 @@
 # Configurations
-title:            "My Frontend Roadmap"
+title:            "Plain Frontend Roadmap"
 longtitle:        "Frontend TIL & Study Notes"
-author:           Your Name
-email:            youremail@example.com
+author:           NoSeungjun + @
+email:            shtmdwns0@gmail.com
 description: >
   프론트엔드 공부 기록과 로드맵을 정리한 GitBook 스타일 페이지입니다.
 
@@ -50,17 +50,9 @@ exclude:
   - _drafts
 
 collections:
-  pages:
-    output: true
-    permalink: /:collection/:path/
-  others:
-    output: true
-    permalink: /:collection/:path/
 
 ordered_collections:
   - posts
-  - pages
-  - others
 
 page_width: 800px
 

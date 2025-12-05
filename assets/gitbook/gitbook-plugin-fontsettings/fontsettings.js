@@ -1,6 +1,6 @@
 require(['gitbook', 'jquery'], function(gitbook, $) {
     // Configuration
-    var MAX_SIZE       = 4,
+    var MAX_SIZE       = 2,
         MIN_SIZE       = 0,
         BUTTON_ID;
 
@@ -27,18 +27,7 @@ require(['gitbook', 'jquery'], function(gitbook, $) {
     ];
 
     // Default font families
-    var FAMILIES = [
-        {
-            config: 'serif',
-            text: 'Serif',
-            id: 0
-        },
-        {
-            config: 'sans',
-            text: 'Sans',
-            id: 1
-        }
-    ];
+    var FAMILIES = [];
 
     // Return configured themes
     function getThemes() {

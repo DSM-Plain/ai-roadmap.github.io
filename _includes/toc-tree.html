@@ -1,0 +1,58 @@
+{% comment %}
+Recursively renders a hierarchical category tree
+Parameters:
+  - tree: The category tree hash
+  - level: Current depth level (for unique data-level attribute)
+  - prefix: Prefix for data-level (e.g., "1.1")
+{% endcomment %}
+
+{% assign tree = include.tree %}
+{% assign level = include.level | default: 1 %}
+{% assign prefix = include.prefix | default: "1" %}
+{% assign index = 0 %}
+
+{% for category_pair in tree %}
+  {% assign category_name = category_pair[0] %}
+  {% assign category_data = category_pair[1] %}
+  {% assign index = index | plus: 1 %}
+  {% assign current_level = prefix | append: "." | append: index %}
+
+  {% assign has_children = false %}
+  {% if category_data.children.size > 0 %}
+    {% assign has_children = true %}
+  {% endif %}
+
+  {% assign has_posts = false %}
+  {% if category_data.posts.size > 0 %}
+    {% assign has_posts = true %}
+  {% endif %}
+
+  <li class="chapter" data-level="{{ current_level }}" data-path="">
+    <span class="category-name">{{ category_name }}</span>
+
+    {% if has_posts or has_children %}
+    <ul class="articles">
+      {% comment %} Render posts at this level {% endcomment %}
+      {% for post in category_data.posts %}
+        {% assign post_index = forloop.index %}
+        {% assign post_level = current_level | append: "." | append: post_index %}
+
+        {% if page.url == post.url %}
+        <li class="chapter active" data-level="{{ post_level }}" data-path="{{site.baseurl}}{{post.url}}">
+        {% else %}
+        <li class="chapter" data-level="{{ post_level }}" data-path="{{site.baseurl}}{{post.url}}">
+        {% endif %}
+          <a href="{{site.baseurl}}{{post.url}}" onclick="pageScrollToTop(this)">
+            {{ post.title | escape }}
+          </a>
+        </li>
+      {% endfor %}
+
+      {% comment %} Recursively render children categories {% endcomment %}
+      {% if has_children %}
+        {% include toc-tree.html tree=category_data.children level=level prefix=current_level %}
+      {% endif %}
+    </ul>
+    {% endif %}
+  </li>
+{% endfor %}

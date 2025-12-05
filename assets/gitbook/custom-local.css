@@ -3,3 +3,87 @@
  * Its purpose is for users of the theme to be able to add css rules from a blank file
  *   these get simply added to the ones already active in the layout.
  */
+
+/* Nested folder structure styles */
+.folder-item {
+    margin: 0;
+}
+
+.folder-item > .folder-name {
+    display: block;
+    padding: 7px 15px;
+    font-weight: bold;
+    color: #364149;
+    background: transparent;
+    cursor: default;
+    font-size: 14px;
+    text-transform: capitalize;
+}
+
+/* Nested articles under folders */
+.folder-item > .articles {
+    padding-left: 0;
+    margin-left: 12px;
+}
+
+/* Nested folders within folders */
+.folder-item .folder-item {
+    margin-left: 0;
+}
+
+/* Indent nested levels */
+.folder-item .folder-item > .folder-name {
+    padding-left: 30px;
+    font-size: 13px;
+}
+
+.folder-item .folder-item .folder-item > .folder-name {
+    padding-left: 45px;
+    font-size: 12px;
+}
+
+/* Articles styling within folders */
+.folder-item .articles > li > a {
+    padding-left: 30px;
+}
+
+.folder-item .folder-item .articles > li > a {
+    padding-left: 45px;
+}
+
+.folder-item .folder-item .folder-item .articles > li > a {
+    padding-left: 60px;
+}
+
+/* Category name styles for hierarchical tree */
+.category-name {
+    display: block;
+    padding: 7px 15px;
+    font-weight: bold;
+    color: #364149;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    text-transform: capitalize;
+}
+
+/* Nested category indentation */
+.chapter .chapter > .category-name {
+    padding-left: 30px;
+    font-size: 14px;
+}
+
+.chapter .chapter .chapter > .category-name {
+    padding-left: 30px;
+    font-size: 13px;
+}
+
+/* Article links indentation within categories */
+
+.chapter .chapter > .articles > li.chapter > a {
+    padding-left: 25px;
+}
+
+.chapter .chapter .chapter > .articles > li.chapter > a {
+    padding-left: 25px;
+}
