@@ -32,7 +32,7 @@ jobs:
           echo "changed_files=${CHANGED_FILES}" >> $GITHUB_OUTPUT
 
       - name: Send Discord notification
-        continue-on-error: true  # Discord 알림 실패가 전체 워크플로우를 중단시키지 않도록
+        continue-on-error: true
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
@@ -52,37 +52,45 @@ jobs:
           DELETIONS="${{ steps.pr-stats.outputs.deletions }}"
           CHANGED_FILES="${{ steps.pr-stats.outputs.changed_files }}"
 
-          # JSON 이스케이프 처리 (따옴표, 백슬래시)
-          PR_TITLE_ESCAPED=$(echo "$PR_TITLE" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
-
-          # Discord Embed JSON 생성 및 전송
-          curl -H "Content-Type: application/json" \
-               -X POST \
-               -d "{
-                 \"username\": \"GitHub Bot\",
-                 \"avatar_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\",
-                 \"embeds\": [{
-                   \"title\": \"🔔 새로운 Pull Request가 생성되었습니다 #${PR_NUMBER}\",
-                   \"description\": \"**PR 제목:** ${PR_TITLE_ESCAPED}\\n\\n**작성자:** [${AUTHOR_NAME}](${AUTHOR_URL})\\n**소스 브랜치:** \\\`${SOURCE_BRANCH}\\\` → **타겟 브랜치:** \\\`${TARGET_BRANCH}\\\`\",
-                   \"color\": 3066993,
-                   \"fields\": [
-                     {
-                       \"name\": \"📊 변경 요약\",
-                       \"value\": \"\\\`\\\`\\\`diff\\n+ ${CHANGED_FILES} 파일 변경\\n+ ${ADDITIONS} 줄 추가, ${DELETIONS} 줄 삭제\\n\\\`\\\`\\\`\",
-                       \"inline\": false
-                     },
-                     {
-                       \"name\": \"🔗 PR 확인하기\",
-                       \"value\": \"[Pull Request 보기](${PR_URL})\\n[GitHub에서 리뷰 및 Approve 하기](${PR_URL}/files)\",
-                       \"inline\": false
-                     }
-                   ],
-                   \"url\": \"${PR_URL}\",
-                   \"timestamp\": \"${TIMESTAMP}\",
-                   \"footer\": {
-                     \"text\": \"${REPO_NAME}\",
-                     \"icon_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\"
-                   }
-                 }]
-               }" \
-               "$DISCORD_WEBHOOK_URL"
+          # JSON 페이로드를 jq로 안전하게 생성
+          jq -n \
+            --arg title "🔔 새로운 Pull Request가 생성되었습니다 #${PR_NUMBER}" \
+            --arg pr_title "$PR_TITLE" \
+            --arg author "$AUTHOR_NAME" \
+            --arg author_url "$AUTHOR_URL" \
+            --arg source "$SOURCE_BRANCH" \
+            --arg target "$TARGET_BRANCH" \
+            --arg pr_url "$PR_URL" \
+            --arg changes "+ ${CHANGED_FILES} 파일 변경\n+ ${ADDITIONS} 줄 추가, ${DELETIONS} 줄 삭제" \
+            --arg repo "$REPO_NAME" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              username: "GitHub Bot",
+              avatar_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+              embeds: [{
+                title: $title,
+                description: ("**PR 제목:** " + $pr_title + "\n\n**작성자:** [" + $author + "](" + $author_url + ")\n**소스 브랜치:** `" + $source + "` → **타겟 브랜치:** `" + $target + "`"),
+                color: 3066993,
+                fields: [
+                  {
+                    name: "📊 변경 요약",
+                    value: ("```diff\n" + $changes + "\n```"),
+                    inline: false
+                  },
+                  {
+                    name: "🔗 PR 확인하기",
+                    value: ("[Pull Request 보기](" + $pr_url + ")\n[GitHub에서 리뷰 및 Approve 하기](" + $pr_url + "/files)"),
+                    inline: false
+                  }
+                ],
+                url: $pr_url,
+                timestamp: $timestamp,
+                footer: {
+                  text: $repo,
+                  icon_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                }
+              }]
+            }' | curl -H "Content-Type: application/json" \
+                      -X POST \
+                      -d @- \
+                      "$DISCORD_WEBHOOK_URL"
