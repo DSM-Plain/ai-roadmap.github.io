@@ -1,26 +1,30 @@
 ---
 layout: home
-title: Plain 프론트 로드맵에 오신 것을 환영합니다~
+title: Plain AI 로드맵에 오신 것을 환영합니다~
 permalink: /
 ---
 
-# Frontend Roadmap 기여 가이드
+# AI Roadmap 기여 가이드
 
-프론트엔드 로드맵 프로젝트에 오신 것을 환영합니다! 이 가이드는 후배들이 쉽게 로드맵에 기여할 수 있도록 작성되었습니다.
+인공지능 로드맵 프로젝트에 오신 것을 환영합니다! 이 가이드는 후배들이 쉽게 로드맵에 기여할 수 있도록 작성되었습니다.
 
 ## 프로젝트 구조
 
 ```
-frontend-roadmap.github.io/
+ai-roadmap.github.io/
 ├── _config.yml           # Jekyll 설정 파일
 ├── _posts/              # 블로그 포스트 (계층적 폴더 구조, depth 제한 없음)
-│   ├── frontend/        # 메인 카테고리
-│   │   ├── javascript/  # 서브 카테고리
-│   │   │   ├── basics/  # 하위 카테고리 (원하는 만큼 깊게 가능)
-│   │   │   └── advanced/
-│   │   ├── react/
-│   │   └── css/
-│   ├── backend/
+│   ├── ai/              # 메인 카테고리
+│   │   ├── fundamentals/    # AI 기초
+│   │   │   └── basics/      # 기본 개념
+│   │   ├── machine-learning/  # 머신러닝
+│   │   │   └── supervised/    # 지도 학습
+│   │   ├── deep-learning/     # 딥러닝
+│   │   │   └── neural-networks/  # 신경망
+│   │   ├── nlp/              # 자연어 처리
+│   │   │   └── basics/
+│   │   └── computer-vision/  # 컴퓨터 비전
+│   │       └── basics/
 │   ├── docs/
 │   └── learning/
 ├── _plugins/            # Jekyll 플러그인
@@ -38,10 +42,10 @@ frontend-roadmap.github.io/
 현재 프로젝트는 다음과 같이 설정되어 있습니다:
 
 ### Jekyll 설정 (_config.yml)
-- **사이트 제목**: "Plain Frontend Roadmap"
-- **설명**: GitBook 스타일의 프론트엔드 학습 페이지
+- **사이트 제목**: "Plain AI Roadmap"
+- **설명**: GitBook 스타일의 인공지능 학습 페이지
 - **테마**: jekyll-gitbook (원격 테마 사용)
-- **URL**: https://dsm-plain.github.io/frontend-roadmap.github.io
+- **URL**: https://dsm-plain.github.io/ai-roadmap.github.io
 
 ### 주요 기능
 - **자동 카테고리 생성**: 폴더 구조에서 자동으로 다단계 카테고리 생성 (`_plugins/auto_categories.rb`)
@@ -61,13 +65,13 @@ _posts/[카테고리]/[서브카테고리]/[하위카테고리]/.../YYYY-MM-DD-�
 ```
 
 예시:
-- `_posts/frontend/javascript/basics/2025-12-04-variables.md`
-- `_posts/backend/database/sql/advanced/2025-12-04-optimization.md`
-- `_posts/frontend/react/hooks/custom/2025-12-04-useCustomHook.md`
+- `_posts/ai/fundamentals/basics/2025-12-07-what-is-ai.md`
+- `_posts/ai/machine-learning/supervised/2025-12-07-linear-regression.md`
+- `_posts/ai/deep-learning/neural-networks/2025-12-07-introduction.md`
 
 **폴더 구조와 카테고리:**
 - 폴더 구조가 자동으로 **다단계 카테고리**로 변환됩니다 (depth 제한 없음)
-- `_posts/frontend/javascript/basics/파일.md` → categories: `[frontend, javascript, basics]`
+- `_posts/ai/fundamentals/basics/파일.md` → categories: `[ai, fundamentals, basics]`
 - `_posts/a/b/c/d/파일.md` → categories: `[a, b, c, d]` (원하는 만큼 깊게 가능!)
 - 사이드바에서 계층적으로 표시되며, 각 섹션을 독립적으로 펼치고 접을 수 있습니다
 
@@ -77,9 +81,9 @@ _posts/[카테고리]/[서브카테고리]/[하위카테고리]/.../YYYY-MM-DD-�
 
 ```yaml
 ---
-title: JavaScript 변수 선언
+title: 인공지능이란 무엇인가?
 author: 작성자 이름
-date: 2025-12-04
+date: 2025-12-07
 layout: post
 ---
 ```
@@ -97,41 +101,43 @@ Front Matter 아래에 마크다운 형식으로 콘텐츠를 작성합니다:
 
 ```markdown
 ---
-title: React useState 훅
+title: 선형 회귀 (Linear Regression)
 author: 홍길동
-date: 2025-12-04
+date: 2025-12-07
 layout: post
 ---
 
-# useState 훅이란?
+# 선형 회귀란?
 
-React에서 상태를 관리하는 가장 기본적인 훅입니다.
+가장 기본적인 지도 학습 알고리즘으로, 입력 변수와 출력 변수 간의 선형 관계를 모델링합니다.
 
-## 기본 사용법
+## 기본 수식
 
-\```jsx
-const [count, setCount] = useState(0);
+\```
+y = wx + b
 \```
 
 ## 예제 코드
 
-\```jsx
-function Counter() {
-  const [count, setCount] = useState(0);
+\```python
+from sklearn.linear_model import LinearRegression
+import numpy as np
 
-  return (
-    <div>
-      <p>Count: {count}</p>
-      <button onClick={() => setCount(count + 1)}>
-        증가
-      </button>
-    </div>
-  );
-}
+# 샘플 데이터 생성
+X = np.array([[1], [2], [3], [4], [5]])
+y = np.array([2, 4, 6, 8, 10])
+
+# 모델 생성 및 학습
+model = LinearRegression()
+model.fit(X, y)
+
+# 예측
+predictions = model.predict([[6], [7]])
+print(predictions)
 \```
 ```
 
-**파일 위치**: `_posts/frontend/react/hooks/2025-12-04-usestate.md`
+**파일 위치**: `_posts/ai/machine-learning/supervised/2025-12-07-linear-regression.md`
 
 ## 카테고리 관리
 
@@ -141,49 +147,44 @@ function Counter() {
 
 ```
 _posts/
-├── frontend/              # 1단계: 메인 카테고리
-│   ├── javascript/        # 2단계: 서브 카테고리
-│   │   ├── basics/        # 3단계: 섹션
-│   │   │   └── 2025-12-04-variables.md
-│   │   └── advanced/
-│   │       └── 2025-12-04-closures.md
-│   ├── react/
-│   │   └── hooks/
-│   │       └── 2025-12-04-usestate.md
-│   └── css/
-│       └── layout/
-│           └── 2025-12-04-flexbox.md
-└── backend/
-    ├── nodejs/
-    │   └── express/
-    │       └── 2025-12-04-routing.md
-    └── database/
-        └── sql/
-            └── 2025-12-04-queries.md
+└── ai/                              # 1단계: 메인 카테고리
+    ├── fundamentals/                # 2단계: AI 기초
+    │   └── basics/                  # 3단계: 섹션
+    │       ├── 2025-12-07-what-is-ai.md
+    │       └── 2025-12-07-python-basics.md
+    ├── machine-learning/            # 2단계: 머신러닝
+    │   └── supervised/
+    │       └── 2025-12-07-linear-regression.md
+    ├── deep-learning/               # 2단계: 딥러닝
+    │   └── neural-networks/
+    │       └── 2025-12-07-introduction.md
+    ├── nlp/                         # 2단계: 자연어 처리
+    │   └── basics/
+    │       └── 2025-12-07-text-preprocessing.md
+    └── computer-vision/             # 2단계: 컴퓨터 비전
+        └── basics/
+            └── 2025-12-07-image-basics.md
 ```
 
 **사이드바 표시 예상 결과:**
 ```
-Frontend
-├─ JavaScript
-│  ├─ Basics
-│  │  └─ JavaScript 변수 선언
-│  └─ Advanced
-│     └─ JavaScript 클로저 이해하기
-├─ React
-│  └─ Hooks
-│     └─ React useState 훅
-└─ CSS
-   └─ Layout
-      └─ CSS Flexbox 레이아웃
-
-Backend
-├─ Nodejs
-│  └─ Express
-│     └─ Express 라우팅 기초
-└─ Database
-   └─ SQL
-      └─ SQL 기본 쿼리
+AI
+├─ Fundamentals
+│  └─ Basics
+│     ├─ 인공지능이란 무엇인가?
+│     └─ AI를 위한 Python 기초
+├─ Machine Learning
+│  └─ Supervised
+│     └─ 선형 회귀 (Linear Regression)
+├─ Deep Learning
+│  └─ Neural Networks
+│     └─ 신경망 입문
+├─ NLP
+│  └─ Basics
+│     └─ 텍스트 전처리
+└─ Computer Vision
+   └─ Basics
+      └─ 컴퓨터 비전 기초
 ```
 
 ### 새 카테고리 추가하기
@@ -192,13 +193,13 @@ Backend
 
 ```bash
 # 새로운 계층 구조 만들기 (원하는 만큼 깊게 가능)
-mkdir -p _posts/devops/docker/basics
-mkdir -p _posts/frontend/react/advanced/optimization/memoization
+mkdir -p _posts/ai/reinforcement-learning/basics
+mkdir -p _posts/ai/deep-learning/cnn/advanced/optimization
 ```
 
 그 안에 포스트를 작성하면:
-- `_posts/devops/docker/basics/파일.md` → `devops > docker > basics` 계층으로 표시
-- `_posts/frontend/react/advanced/optimization/memoization/파일.md` → 5단계 계층으로 표시
+- `_posts/ai/reinforcement-learning/basics/파일.md` → `ai > reinforcement-learning > basics` 계층으로 표시
+- `_posts/ai/deep-learning/cnn/advanced/optimization/파일.md` → 5단계 계층으로 표시
 
 ⚠️ **중요**: 파일명은 반드시 `YYYY-MM-DD-제목.md` 형식이어야 Jekyll이 포스트로 인식합니다!
 
@@ -210,32 +211,32 @@ mkdir -p _posts/frontend/react/advanced/optimization/memoization
 
 ```markdown
 ---
-title: CSS Flexbox 완전 정복
+title: 신경망 입문
 author: 작성자 이름
-date: 2025-12-04
+date: 2025-12-07
 layout: post
 ---
 
-# Flexbox란?
+# 신경망의 구조
 
-## 기본 개념
+## 기본 구성 요소
 
-### Flex Container
-### Flex Item
+### 입력층 (Input Layer)
+### 은닉층 (Hidden Layer)
 
-## 주요 속성
+## 활성화 함수
 
-### justify-content
-### align-items
+### ReLU
+### Sigmoid
 ```
 
 위와 같이 작성하면 사이드바에서 포스트를 클릭했을 때 다음과 같은 목차가 표시됩니다:
 
 ```
-CSS Flexbox 완전 정복
-  └ Flexbox란?
-    └ 기본 개념
-    └ 주요 속성
+신경망 입문
+  └ 신경망의 구조
+    └ 기본 구성 요소
+    └ 활성화 함수
 ```
 
 ### 목차에서 제외하기
@@ -273,7 +274,7 @@ bundle install
 bundle exec jekyll serve
 ```
 
-브라우저에서 `http://localhost:4000/frontend-roadmap.github.io/`로 접속하여 확인합니다.
+브라우저에서 `http://localhost:4000/ai-roadmap.github.io/`로 접속하여 확인합니다.
 
 ## 마크다운 문법 팁
 
@@ -306,7 +307,7 @@ console.log(greeting);
 ### 이미지 추가
 
 ```markdown
-![이미지 설명](/frontend-roadmap.github.io/assets/images/example.png)
+![이미지 설명](/ai-roadmap.github.io/assets/images/example.png)
 ```
 
 ### 링크
@@ -378,8 +379,8 @@ git commit -m "feat: Implement search functionality"
 ### 1. 저장소 클론
 
 ```bash
-git clone https://github.com/dsm-plain/frontend-roadmap.github.io.git
-cd frontend-roadmap.github.io
+git clone https://github.com/dsm-plain/ai-roadmap.github.io.git
+cd ai-roadmap.github.io
 ```
 
 ### 2. Git Hooks 설치 (필수!)
@@ -392,21 +393,21 @@ cd frontend-roadmap.github.io
 
 ```bash
 # 올바른 형식: {prefix}/{description}
-git checkout -b docs/add-react-hooks
+git checkout -b docs/add-neural-network
 ```
 
 ### 4. 변경사항 커밋
 
 ```bash
-git add _posts/2025-12-04-react-hooks.md
+git add _posts/ai/deep-learning/neural-networks/2025-12-07-introduction.md
 # 브랜치 prefix와 일치하는 커밋 메시지 사용
-git commit -m "docs: Add React Hooks 기초 가이드"
+git commit -m "docs: Add 신경망 입문 가이드"
 ```
 
 ### 5. 푸시 및 Pull Request
 
 ```bash
-git push origin docs/add-react-hooks
+git push origin docs/add-neural-network
 ```
 
 GitHub에서 Pull Request를 생성합니다.
@@ -464,7 +465,7 @@ bundle exec jekyll serve
 
 ## 도움이 필요하면?
 
-- 이슈 등록: [GitHub Issues](https://github.com/dsm-plain/frontend-roadmap.github.io/issues)
+- 이슈 등록: [GitHub Issues](https://github.com/dsm-plain/ai-roadmap.github.io/issues)
 - Jekyll 문서: [Jekyll 공식 문서](https://jekyllrb.com/docs/)
 - Markdown 가이드: [Markdown Guide](https://www.markdownguide.org/)
 
