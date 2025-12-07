@@ -53,7 +53,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Send Discord notification
-        continue-on-error: true  # Discord 알림 실패가 전체 워크플로우를 중단시키지 않도록
+        continue-on-error: true
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
@@ -78,31 +78,37 @@ jobs:
             CHANGED_FILES="변경된 파일 없음"
           fi
 
-          # JSON 이스케이프 처리 (따옴표, 백슬래시, 줄바꿈)
-          COMMIT_MESSAGE_ESCAPED=$(echo "$COMMIT_MESSAGE" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}' | sed 's/\\n$//')
-          CHANGED_FILES_ESCAPED=$(echo "$CHANGED_FILES" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
-
-          # Discord Embed JSON 생성 및 전송
-          curl -H "Content-Type: application/json" \
-               -X POST \
-               -d "{
-                 \"username\": \"GitHub Bot\",
-                 \"avatar_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\",
-                 \"embeds\": [{
-                   \"title\": \"✅ Main 브랜치에 새로운 커밋이 추가되었습니다\",
-                   \"description\": \"**커밋 메시지:** ${COMMIT_MESSAGE_ESCAPED}\\n\\n**작성자:** [${AUTHOR_NAME}](https://github.com/${AUTHOR_USERNAME})\\n**브랜치:** \\\`main\\\`\\n**커밋 SHA:** \\\`${COMMIT_SHORT_SHA}\\\`\",
-                   \"color\": 3447003,
-                   \"fields\": [{
-                     \"name\": \"📂 변경된 파일 (최대 10개)\",
-                     \"value\": \"\\\`\\\`\\\`\\n${CHANGED_FILES_ESCAPED}\\n\\\`\\\`\\\`\",
-                     \"inline\": false
-                   }],
-                   \"url\": \"${COMMIT_URL}\",
-                   \"timestamp\": \"${TIMESTAMP}\",
-                   \"footer\": {
-                     \"text\": \"${REPO_NAME}\",
-                     \"icon_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\"
-                   }
-                 }]
-               }" \
-               "$DISCORD_WEBHOOK_URL"
+          # JSON 페이로드를 jq로 안전하게 생성
+          jq -n \
+            --arg title "✅ Main 브랜치에 새로운 커밋이 추가되었습니다" \
+            --arg commit_msg "$COMMIT_MESSAGE" \
+            --arg author "$AUTHOR_NAME" \
+            --arg author_username "$AUTHOR_USERNAME" \
+            --arg sha "$COMMIT_SHORT_SHA" \
+            --arg commit_url "$COMMIT_URL" \
+            --arg changed_files "$CHANGED_FILES" \
+            --arg repo "$REPO_NAME" \
+            --arg timestamp "$TIMESTAMP" \
+            '{
+              username: "GitHub Bot",
+              avatar_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+              embeds: [{
+                title: $title,
+                description: ("**커밋 메시지:** " + $commit_msg + "\n\n**작성자:** [" + $author + "](https://github.com/" + $author_username + ")\n**브랜치:** `main`\n**커밋 SHA:** `" + $sha + "`"),
+                color: 3447003,
+                fields: [{
+                  name: "📂 변경된 파일 (최대 10개)",
+                  value: ("```\n" + $changed_files + "\n```"),
+                  inline: false
+                }],
+                url: $commit_url,
+                timestamp: $timestamp,
+                footer: {
+                  text: $repo,
+                  icon_url: "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+                }
+              }]
+            }' | curl -H "Content-Type: application/json" \
+                      -X POST \
+                      -d @- \
+                      "$DISCORD_WEBHOOK_URL"
