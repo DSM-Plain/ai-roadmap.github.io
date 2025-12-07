@@ -5,8 +5,6 @@ date: 2025-12-07
 layout: post
 ---
 
-# AI를 위한 Python 기초
-
 Python은 AI 개발에 가장 널리 사용되는 프로그래밍 언어입니다.
 
 ## Python이 AI에 적합한 이유

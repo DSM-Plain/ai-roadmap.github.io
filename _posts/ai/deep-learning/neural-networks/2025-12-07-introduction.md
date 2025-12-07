@@ -5,8 +5,6 @@ date: 2025-12-07
 layout: post
 ---
 
-# 신경망 입문 (Neural Networks Introduction)
-
 신경망은 인간의 뇌 구조에서 영감을 받은 머신러닝 모델입니다.
 
 ## 신경망의 구조
