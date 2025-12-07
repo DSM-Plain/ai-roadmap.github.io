@@ -40,6 +40,9 @@ df = pd.DataFrame({
 print(df.head())
 ```
 
+### Matplotlib (선택)
+모델 학습 후에 성능 지표를 나타낼 때 사용
+
 ## 실습 예제
 
 ```python
