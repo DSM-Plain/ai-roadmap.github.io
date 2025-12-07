@@ -1,0 +1,108 @@
+################################################################################
+# Discord 웹훅 통합 설정 가이드
+################################################################################
+#
+# 1. Discord 웹훅 생성
+#    - Discord 채널 설정 (톱니바퀴 아이콘) → 연동 → 웹훅
+#    - "새 웹훅" 버튼 클릭
+#    - 웹훅 이름 설정 (예: "GitHub Bot")
+#    - "웹훅 URL 복사" 버튼 클릭
+#
+# 2. GitHub Secrets 설정
+#    - GitHub 저장소 → Settings → Secrets and variables → Actions
+#    - "New repository secret" 클릭
+#    - Name: DISCORD_WEBHOOK_URL
+#    - Value: (복사한 Discord 웹훅 URL 붙여넣기)
+#    - "Add secret" 클릭
+#
+# 3. 테스트
+#    - main 브랜치에 커밋 push
+#    - Discord 채널에서 알림 확인
+#
+# 4. 문제 해결
+#    - Actions 탭에서 워크플로우 실행 로그 확인
+#    - Discord 채널에서 웹훅이 활성화되어 있는지 확인
+#    - Secret 이름이 정확히 DISCORD_WEBHOOK_URL인지 확인
+#
+################################################################################
+
+name: Discord Push Notification
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  notify-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # 이전 커밋과 비교하기 위해 최소 2개의 커밋 가져오기
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # git diff로 변경된 파일 목록 추출 (최대 10개)
+          CHANGED_FILES=$(git diff --name-status HEAD~1 HEAD | head -10)
+
+          # 출력 변수에 저장 (multiline 지원)
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Send Discord notification
+        continue-on-error: true  # Discord 알림 실패가 전체 워크플로우를 중단시키지 않도록
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          # GitHub 컨텍스트 변수 추출
+          COMMIT_MESSAGE="${{ github.event.head_commit.message }}"
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_SHORT_SHA="${COMMIT_SHA:0:7}"
+          AUTHOR_NAME="${{ github.event.head_commit.author.name }}"
+          AUTHOR_USERNAME="${{ github.event.head_commit.author.username }}"
+          COMMIT_URL="${{ github.event.head_commit.url }}"
+          REPO_NAME="${{ github.repository }}"
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+          # 변경된 파일 목록
+          CHANGED_FILES=$(cat <<'EOF'
+          ${{ steps.changed-files.outputs.files }}
+          EOF
+          )
+
+          # 파일 목록이 비어있으면 기본 메시지
+          if [ -z "$CHANGED_FILES" ]; then
+            CHANGED_FILES="변경된 파일 없음"
+          fi
+
+          # JSON 이스케이프 처리 (따옴표, 백슬래시, 줄바꿈)
+          COMMIT_MESSAGE_ESCAPED=$(echo "$COMMIT_MESSAGE" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}' | sed 's/\\n$//')
+          CHANGED_FILES_ESCAPED=$(echo "$CHANGED_FILES" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g')
+
+          # Discord Embed JSON 생성 및 전송
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d "{
+                 \"username\": \"GitHub Bot\",
+                 \"avatar_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\",
+                 \"embeds\": [{
+                   \"title\": \"✅ Main 브랜치에 새로운 커밋이 추가되었습니다\",
+                   \"description\": \"**커밋 메시지:** ${COMMIT_MESSAGE_ESCAPED}\\n\\n**작성자:** [${AUTHOR_NAME}](https://github.com/${AUTHOR_USERNAME})\\n**브랜치:** \\\`main\\\`\\n**커밋 SHA:** \\\`${COMMIT_SHORT_SHA}\\\`\",
+                   \"color\": 3447003,
+                   \"fields\": [{
+                     \"name\": \"📂 변경된 파일 (최대 10개)\",
+                     \"value\": \"\\\`\\\`\\\`\\n${CHANGED_FILES_ESCAPED}\\n\\\`\\\`\\\`\",
+                     \"inline\": false
+                   }],
+                   \"url\": \"${COMMIT_URL}\",
+                   \"timestamp\": \"${TIMESTAMP}\",
+                   \"footer\": {
+                     \"text\": \"${REPO_NAME}\",
+                     \"icon_url\": \"https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png\"
+                   }
+                 }]
+               }" \
+               "$DISCORD_WEBHOOK_URL"

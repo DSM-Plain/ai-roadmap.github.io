@@ -324,6 +324,55 @@ console.log(greeting);
 | position | 위치 지정 | relative, absolute |
 ```
 
+## Git Hooks 설정
+
+이 프로젝트는 브랜치 네이밍 규칙과 커밋 메시지 규칙을 자동으로 검증합니다.
+
+### 설치
+
+저장소를 clone한 후 hooks를 설치하세요:
+
+```bash
+./scripts/install-hooks.sh
+```
+
+### 브랜치 네이밍 규칙
+
+브랜치 이름은 다음 형식을 따라야 합니다:
+
+```
+{prefix}/{description}
+```
+
+**허용된 prefix:**
+- `docs/` - 문서 생성
+- `edit/` - 문서 수정
+- `delete/` - 문서 삭제
+- `feat/` - 로드맵 기능 추가
+- `fix/` - 기능 수정 (hotfix 포함)
+- `remove/` - 기능 삭제
+
+**예시:**
+```bash
+git checkout -b docs/add-react-hooks
+git checkout -b feat/implement-search
+git checkout -b fix/correct-layout-bug
+```
+
+### 커밋 메시지 규칙
+
+커밋 메시지는 브랜치 prefix와 일치해야 합니다:
+
+```bash
+# docs/ 브랜치에서
+git commit -m "docs: Add React Hooks documentation"
+
+# feat/ 브랜치에서
+git commit -m "feat: Implement search functionality"
+```
+
+자세한 내용은 [.githooks/README.md](.githooks/README.md)를 참고하세요.
+
 ## Git 워크플로우
 
 ### 1. 저장소 클론
@@ -333,23 +382,31 @@ git clone https://github.com/dsm-plain/frontend-roadmap.github.io.git
 cd frontend-roadmap.github.io
 ```
 
-### 2. 브랜치 생성
+### 2. Git Hooks 설치 (필수!)
 
 ```bash
-git checkout -b feature/add-react-hooks
+./scripts/install-hooks.sh
 ```
 
-### 3. 변경사항 커밋
+### 3. 브랜치 생성
+
+```bash
+# 올바른 형식: {prefix}/{description}
+git checkout -b docs/add-react-hooks
+```
+
+### 4. 변경사항 커밋
 
 ```bash
 git add _posts/2025-12-04-react-hooks.md
-git commit -m "Add: React Hooks 기초 가이드"
+# 브랜치 prefix와 일치하는 커밋 메시지 사용
+git commit -m "docs: Add React Hooks 기초 가이드"
 ```
 
-### 4. 푸시 및 Pull Request
+### 5. 푸시 및 Pull Request
 
 ```bash
-git push origin feature/add-react-hooks
+git push origin docs/add-react-hooks
 ```
 
 GitHub에서 Pull Request를 생성합니다.
