@@ -12,7 +12,7 @@ module Jekyll
         relative_path = post.relative_path
 
         # Extract folder structure from path
-        # Example: _posts/frontend/javascript/basics/2025-12-04-file.md
+        # Example: _posts/Ai/basics/2025-12-04-file.md
         path_parts = relative_path.split('/')
 
         # Remove _posts and filename
